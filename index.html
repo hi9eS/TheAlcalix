@@ -7,194 +7,133 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-/* ─────────────────────────────────────────
-   VARIABLES
-───────────────────────────────────────── */
 :root {
-  --red:        #e62429;
-  --red-dim:    rgba(230,36,41,0.13);
-  --red-glow:   rgba(230,36,41,0.28);
-  --bg:         #070707;
-  --bg2:        #0b0b0b;
-  --card:       #0f0f0f;
-  --card-h:     #151515;
-  --line:       rgba(255,255,255,0.08);
-  --line-m:     rgba(255,255,255,0.15);
-  --t1:         #ebebeb;
-  --t2:         rgba(235,235,235,0.55);
-  --t3:         rgba(235,235,235,0.28);
-  --fd:         'Oswald', sans-serif;
-  --fb:         'DM Sans', sans-serif;
-  --fm:         'DM Mono', monospace;
-  --ease:       cubic-bezier(0.16,1,0.3,1);
-  --dur:        0.52s;
+  --red:      #e62429;
+  --red-dim:  rgba(230,36,41,0.13);
+  --red-glow: rgba(230,36,41,0.28);
+  --bg:       #070707;
+  --bg2:      #0b0b0b;
+  --card:     #0f0f0f;
+  --card-h:   #151515;
+  --line:     rgba(255,255,255,0.08);
+  --line-m:   rgba(255,255,255,0.15);
+  --t1:       #ebebeb;
+  --t2:       rgba(235,235,235,0.55);
+  --t3:       rgba(235,235,235,0.28);
+  --fd:       'Oswald', sans-serif;
+  --fb:       'DM Sans', sans-serif;
+  --fm:       'DM Mono', monospace;
+  --ease:     cubic-bezier(0.16,1,0.3,1);
+  --dur:      0.52s;
 }
-
-/* ─────────────────────────────────────────
-   RESET
-───────────────────────────────────────── */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;outline:none}
 html{font-size:15px}
-body{
-  background:var(--bg);color:var(--t1);
-  font-family:var(--fb);
-  overflow:hidden;height:100vh;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);overflow:hidden;height:100vh;-webkit-font-smoothing:antialiased;}
 a{text-decoration:none;color:inherit}
 button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
 
-/* ─────────────────────────────────────────
-   CANVAS
-───────────────────────────────────────── */
-#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.35}
+/* CANVAS */
+#cvs{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.4}
 
-/* ─────────────────────────────────────────
-   INTRO
-───────────────────────────────────────── */
+/* ── SPLASH (без scan-line) ── */
 #intro{
-  position:fixed;inset:0;background:#000;z-index:9000;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
-  transition:opacity 0.85s var(--ease);
+  position:fixed;inset:0;z-index:9000;background:#000;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1);
 }
 #intro.out{opacity:0;pointer-events:none}
-.il{
-  font-family:var(--fd);font-size:clamp(2.2rem,6.5vw,4.8rem);
-  font-weight:700;letter-spacing:0.14em;text-transform:uppercase;
-  animation:iup 1s var(--ease) both;
+.i-corner{position:absolute;width:20px;height:20px;opacity:0;animation:i-fade 0.2s 0.12s var(--ease) forwards}
+.i-corner.tl{top:26px;left:26px;border-top:1px solid var(--red);border-left:1px solid var(--red)}
+.i-corner.tr{top:26px;right:26px;border-top:1px solid var(--red);border-right:1px solid var(--red)}
+.i-corner.bl{bottom:26px;left:26px;border-bottom:1px solid var(--red);border-left:1px solid var(--red)}
+.i-corner.br{bottom:26px;right:26px;border-bottom:1px solid var(--red);border-right:1px solid var(--red)}
+.i-sys{
+  position:absolute;top:26px;left:50%;transform:translateX(-50%);
+  font-family:var(--fm);font-size:0.46rem;color:var(--t3);letter-spacing:0.35em;text-transform:uppercase;white-space:nowrap;
+  opacity:0;animation:i-fade 0.2s 0.12s var(--ease) forwards;
 }
-.is{
-  font-family:var(--fm);font-size:0.6rem;color:var(--red);
-  letter-spacing:0.4em;text-transform:uppercase;
-  animation:iup 1s 0.18s var(--ease) both;
+.i-center{display:flex;flex-direction:column;align-items:center}
+.i-logo{font-family:var(--fd);font-size:clamp(3rem,10vw,7.2rem);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;line-height:1;overflow:hidden}
+.i-logo-inner{display:block;transform:translateY(110%);animation:i-up 0.45s 0.28s cubic-bezier(0.16,1,0.3,1) forwards}
+.i-logo-inner.glitch{animation:i-up 0.45s 0.28s cubic-bezier(0.16,1,0.3,1) forwards,i-glitch 0.18s 0.74s steps(1) forwards}
+@keyframes i-glitch{
+  0%{clip-path:polygon(0 0,100% 0,100% 40%,0 40%);transform:translate(-4px,0)}
+  33%{clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);transform:translate(4px,0)}
+  66%{clip-path:polygon(0 20%,100% 20%,100% 75%,0 75%);transform:translate(-2px,0)}
+  100%{clip-path:none;transform:translate(0)}
 }
-.ib{width:0;height:1px;background:var(--red);margin-top:10px;animation:ibar 0.9s 0.36s var(--ease) both}
-@keyframes iup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes ibar{from{width:0}to{width:clamp(100px,25vw,300px)}}
+.i-bar{width:0;height:1px;background:var(--red);box-shadow:0 0 10px var(--red-glow);margin:11px 0 9px;animation:i-bar-grow 0.42s 0.58s var(--ease) forwards}
+@keyframes i-bar-grow{to{width:clamp(100px,24vw,300px)}}
+.i-sub{font-family:var(--fm);font-size:0.56rem;color:var(--red);letter-spacing:0.48em;text-transform:uppercase;opacity:0;animation:i-fade 0.3s 0.72s var(--ease) forwards}
+.i-bottom{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--fm);font-size:0.45rem;color:var(--t3);letter-spacing:0.22em;text-transform:uppercase;white-space:nowrap;
+  opacity:0;animation:i-fade 0.25s 0.5s var(--ease) forwards;
+}
+.i-blink{width:4px;height:4px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite}
+@keyframes i-up{from{transform:translateY(110%)}to{transform:translateY(0)}}
+@keyframes i-fade{to{opacity:1}}
 
-/* ─────────────────────────────────────────
-   NAV
-───────────────────────────────────────── */
+/* ── NAV ── */
 nav{
   position:fixed;top:0;left:0;right:0;height:58px;
   display:flex;align-items:center;justify-content:space-between;
   padding:0 44px;z-index:200;
-  background:rgba(7,7,7,0.92);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+  background:rgba(7,7,7,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
 }
-.nlogo{
-  font-family:var(--fd);font-size:1.05rem;
-  font-weight:700;letter-spacing:0.22em;text-transform:uppercase;
-  display:flex;align-items:center;gap:10px;
-}
-.npip{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--red);box-shadow:0 0 7px var(--red-glow);flex-shrink:0;
-}
+.nlogo{font-family:var(--fd);font-size:1.05rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.npip{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 7px var(--red-glow);flex-shrink:0}
+.nright{display:flex;align-items:center;gap:24px}
+.nav-link{font-family:var(--fm);font-size:0.56rem;color:var(--t3);letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:color 0.22s;user-select:none}
+.nav-link:hover{color:var(--t1)}
 .nclock{font-family:var(--fm);font-size:0.62rem;color:var(--t3);letter-spacing:0.1em}
 
-/* ─────────────────────────────────────────
-   HOME
-───────────────────────────────────────── */
+/* ── HOME ── */
 #home{
   position:fixed;inset:0;z-index:100;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding-top:58px;
-  transition:opacity 0.42s var(--ease),transform 0.42s var(--ease);
+  transition:opacity 0.38s var(--ease),transform 0.38s var(--ease);
 }
 #home.hidden{opacity:0;pointer-events:none;transform:scale(0.975)}
-
-.h-tag{
-  font-family:var(--fm);font-size:0.6rem;color:var(--red);
-  letter-spacing:0.38em;text-transform:uppercase;margin-bottom:18px;
-  animation:fup 0.8s 0.1s var(--ease) both;
-}
-.h-title{
-  font-family:var(--fd);
-  font-size:clamp(2.3rem,5.2vw,4.4rem);
-  font-weight:700;text-transform:uppercase;
-  line-height:0.92;letter-spacing:-0.01em;text-align:center;
-  margin-bottom:12px;
-  animation:fup 0.8s 0.18s var(--ease) both;
-}
+.h-tag{font-family:var(--fm);font-size:0.6rem;color:var(--red);letter-spacing:0.38em;text-transform:uppercase;margin-bottom:18px;animation:fup 0.8s 0.1s var(--ease) both}
+.h-title{font-family:var(--fd);font-size:clamp(2.3rem,5.2vw,4.4rem);font-weight:700;text-transform:uppercase;line-height:0.92;letter-spacing:-0.01em;text-align:center;margin-bottom:12px;animation:fup 0.8s 0.18s var(--ease) both}
 .h-title em{font-style:normal;color:var(--red)}
-.h-sub{
-  font-size:0.82rem;color:var(--t2);
-  text-align:center;max-width:340px;line-height:1.65;
-  margin-bottom:44px;
-  animation:fup 0.8s 0.26s var(--ease) both;
-}
+.h-sub{font-size:0.82rem;color:var(--t2);text-align:center;max-width:340px;line-height:1.65;margin-bottom:44px;animation:fup 0.8s 0.26s var(--ease) both}
 .h-nav{display:flex;gap:12px;animation:fup 0.8s 0.34s var(--ease) both}
-
-/* Home buttons — clean cards, no emoji */
 .hbtn{
   position:relative;width:188px;height:188px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:var(--card);border:1px solid var(--line-m);color:var(--t1);
-  transition:background 0.3s var(--ease),border-color 0.3s var(--ease),
-             transform 0.3s var(--ease),box-shadow 0.3s var(--ease);
+  transition:background 0.3s var(--ease),border-color 0.3s var(--ease),transform 0.3s var(--ease),box-shadow 0.3s var(--ease);
   overflow:hidden;
 }
-.hbtn::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:var(--red);transform:scaleX(0);transform-origin:left;
-  transition:transform 0.32s var(--ease);
-}
-.hbtn:hover{
-  background:var(--card-h);border-color:rgba(255,255,255,0.22);
-  transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.55);
-}
+.hbtn::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform 0.32s var(--ease)}
+.hbtn:hover{background:var(--card-h);border-color:rgba(255,255,255,0.22);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.55)}
 .hbtn:hover::before{transform:scaleX(1)}
-.hbtn-n{
-  position:absolute;top:12px;right:14px;
-  font-family:var(--fm);font-size:0.56rem;color:var(--red);letter-spacing:0.1em;
-}
-/* Decorative SVG icon inside button */
-.hbtn-icon{
-  width:36px;height:36px;margin-bottom:14px;opacity:0.55;
-  transition:opacity 0.28s,transform 0.28s var(--ease);
-}
+.hbtn-n{position:absolute;top:12px;right:14px;font-family:var(--fm);font-size:0.56rem;color:var(--red);letter-spacing:0.1em}
+.hbtn-icon{width:36px;height:36px;margin-bottom:14px;opacity:0.55;transition:opacity 0.28s,transform 0.28s var(--ease)}
 .hbtn:hover .hbtn-icon{opacity:0.9;transform:scale(1.08)}
-.hbtn-label{
-  font-family:var(--fd);font-size:0.92rem;font-weight:600;
-  letter-spacing:0.2em;text-transform:uppercase;margin-bottom:5px;
-}
-.hbtn-sub{
-  font-family:var(--fm);font-size:0.54rem;color:var(--t3);
-  letter-spacing:0.12em;text-transform:uppercase;
-}
-
+.hbtn-label{font-family:var(--fd);font-size:0.92rem;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:5px}
+.hbtn-sub{font-family:var(--fm);font-size:0.54rem;color:var(--t3);letter-spacing:0.12em;text-transform:uppercase}
 @keyframes fup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 
-/* ─────────────────────────────────────────
-   LIST PANEL (Фильмы / Сериалы)
-───────────────────────────────────────── */
+/* ── PANELS ── */
 .lpanel{
-  position:fixed;inset:0;z-index:300;
-  background:var(--bg2);
+  position:fixed;inset:0;z-index:300;background:var(--bg2);
   display:flex;flex-direction:column;
-  transform:translateY(100%);
-  transition:transform var(--dur) var(--ease);
-  overflow:hidden;
+  transform:translateY(100%);transition:transform var(--dur) var(--ease);
+  overflow:hidden;pointer-events:none;
 }
-.lpanel.open{transform:translateY(0)}
-
+.lpanel.open{transform:translateY(0);pointer-events:auto}
 .lbar{
-  flex-shrink:0;height:58px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 44px;
-  background:rgba(11,11,11,0.96);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+  flex-shrink:0;height:58px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 44px;background:rgba(11,11,11,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
 }
 .lbar-l{display:flex;align-items:center;gap:14px}
-.lbar-title{
-  font-family:var(--fd);font-size:0.95rem;font-weight:600;
-  letter-spacing:0.22em;text-transform:uppercase;
-}
-.lbar-ct{
-  font-family:var(--fm);font-size:0.56rem;color:var(--t3);
-  letter-spacing:0.1em;padding:3px 8px;border:1px solid var(--line);
-}
+.lbar-title{font-family:var(--fd);font-size:0.95rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase}
+.lbar-ct{font-family:var(--fm);font-size:0.56rem;color:var(--t3);letter-spacing:0.1em;padding:3px 8px;border:1px solid var(--line)}
 .lclose{
   display:flex;align-items:center;gap:7px;
   font-family:var(--fm);font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;
@@ -204,37 +143,35 @@ nav{
 .lclose:hover{color:#fff;border-color:var(--line-m);background:rgba(255,255,255,0.04)}
 .lclose svg{transition:transform 0.26s var(--ease)}
 .lclose:hover svg{transform:rotate(90deg)}
+/* кнопка "Назад" в панели эпизодов */
+#ep-panel-back .lclose-arrow{transition:transform 0.26s var(--ease)}
+#ep-panel-back:hover .lclose-arrow{transform:translateX(-3px)}
 
 .lbody{
-  flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:36px 44px 60px;
+  flex:1;overflow-y:auto;overflow-x:hidden;padding:36px 44px 60px;
   scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;
 }
 .lbody::-webkit-scrollbar{width:3px}
 .lbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:2px}
-
-/* Section header inside list panel */
 .lsec-head{
   display:flex;justify-content:space-between;align-items:flex-end;
   padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:20px;
 }
-.lsec-title{
-  font-family:var(--fd);font-size:1.25rem;font-weight:600;
-  text-transform:uppercase;letter-spacing:0.04em;
-}
+.lsec-title{font-family:var(--fd);font-size:1.25rem;font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
 .lsec-label{font-family:var(--fm);font-size:0.55rem;color:var(--t3);letter-spacing:0.18em;text-transform:uppercase}
 
-/* ─────────────────────────────────────────
-   MOVIE CARDS (in list panel)
-───────────────────────────────────────── */
-.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+/* ── GRIDS ── */
+/* Оба грида используют один и тот же паттерн:
+   auto-fill + minmax — бесконечно масштабируется на новые карточки */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px;align-items:start}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;align-items:start}
 
+/* ── FILM CARD ── */
 .mcard{
   position:relative;height:280px;
   background:var(--card);border:1px solid var(--line);
-  overflow:hidden;display:block;color:#fff;
-  transition:border-color 0.3s,transform 0.3s var(--ease),box-shadow 0.3s;
-  cursor:pointer;
+  overflow:hidden;color:#fff;
+  transition:border-color 0.3s,transform 0.3s var(--ease),box-shadow 0.3s;cursor:pointer;
 }
 .mcard:hover{border-color:var(--line-m);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.55)}
 .mc-bg{
@@ -243,247 +180,367 @@ nav{
   transition:opacity 1.1s var(--ease),transform 1.1s var(--ease),filter 1.1s var(--ease);
 }
 .mcard:hover .mc-bg{opacity:0.42;transform:scale(1.05);filter:grayscale(0.08)}
-.mc-ov{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(7,7,7,1) 0%,rgba(7,7,7,0.08) 52%,transparent 100%);
+.mc-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,7,7,1) 0%,rgba(7,7,7,0.08) 52%,transparent 100%)}
+/* контент всегда внизу, flex-column */
+.mc-ct{
+  position:absolute;bottom:0;left:0;right:0;padding:24px 26px;
+  display:flex;flex-direction:column;align-items:flex-start;
 }
-.mc-ct{position:absolute;bottom:0;left:0;right:0;padding:24px 26px}
 
-/* ─────────────────────────────────────────
-   SERIES CARDS (in list panel)
-───────────────────────────────────────── */
-.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
-
-.scard{
+/* ── SERIES SHOW CARD (аналог film card) ── */
+.shcard{
+  position:relative;height:280px;
   background:var(--card);border:1px solid var(--line);
-  padding:24px 26px 26px;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  min-height:200px;position:relative;overflow:hidden;color:inherit;
-  transition:background 0.28s,border-color 0.28s,transform 0.3s var(--ease),box-shadow 0.3s;
-  cursor:pointer;
+  overflow:hidden;color:#fff;
+  transition:border-color 0.3s,transform 0.3s var(--ease),box-shadow 0.3s;cursor:pointer;
 }
-.scard:hover{background:var(--card-h);border-color:var(--line-m);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.5)}
-.scard::after{
+.shcard:hover{border-color:var(--line-m);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.55)}
+.shcard::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:var(--red);transform:scaleX(0);transform-origin:left;
-  transition:transform 0.32s var(--ease);
+  transition:transform 0.32s var(--ease);z-index:2;
 }
+.shcard:hover::before{transform:scaleX(1)}
+.sh-bg{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0.22;filter:grayscale(0.55);
+  transition:opacity 1.1s var(--ease),transform 1.1s var(--ease),filter 1.1s var(--ease);
+}
+.shcard:hover .sh-bg{opacity:0.4;transform:scale(1.04);filter:grayscale(0.1)}
+.sh-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,7,7,0.98) 0%,rgba(7,7,7,0.12) 55%,transparent 100%)}
+.sh-tag{
+  position:absolute;top:14px;left:16px;z-index:2;
+  font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:0.18em;text-transform:uppercase;
+  padding:3px 8px;border:1px solid var(--line);background:rgba(7,7,7,0.7);backdrop-filter:blur(6px);
+}
+.sh-ct{
+  position:absolute;bottom:0;left:0;right:0;padding:24px 26px;
+  display:flex;flex-direction:column;align-items:flex-start;z-index:1;
+}
+
+/* ── EPISODE CARD ── */
+.scard{
+  background:var(--card);border:1px solid var(--line);
+  padding:0;display:flex;flex-direction:column;justify-content:flex-end;
+  min-height:210px;position:relative;overflow:hidden;color:inherit;
+  transition:background 0.28s,border-color 0.28s,transform 0.3s var(--ease),box-shadow 0.3s;cursor:pointer;
+}
+.scard:hover{background:var(--card-h);border-color:var(--line-m);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.5)}
+.scard::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform 0.32s var(--ease)}
 .scard:hover::after{transform:scaleX(1)}
+/* контент карточки — фиксированный блок внизу;
+   верхний padding 50px резервирует место под .sc-tag и .sc-num */
+.sc-inner{
+  padding:54px 22px 22px;display:flex;flex-direction:column;align-items:flex-start;
+}
 .sc-num{
-  position:absolute;top:18px;right:20px;
-  font-family:var(--fd);font-size:2.4rem;font-weight:700;
-  color:rgba(255,255,255,0.04);line-height:1;pointer-events:none;
-  transition:color 0.3s;
+  position:absolute;top:14px;right:16px;
+  font-family:var(--fd);font-size:2.8rem;font-weight:700;
+  color:rgba(255,255,255,0.04);line-height:1;pointer-events:none;transition:color 0.3s;
 }
 .scard:hover .sc-num{color:rgba(230,36,41,0.05)}
 
-/* shared card components */
-.badge{
-  display:inline-flex;align-items:center;gap:6px;
+/* ── EPISODE TAG (плашка СЕЗОН·СЕРИЯ в верхнем левом углу) ── */
+.sc-tag{
+  position:absolute;top:14px;left:16px;z-index:2;
+  display:inline-flex;align-items:center;gap:8px;
   font-family:var(--fm);font-size:0.55rem;
-  letter-spacing:0.2em;text-transform:uppercase;
-  padding:3px 9px;margin-bottom:8px;
+  letter-spacing:0.18em;text-transform:uppercase;
+  padding:5px 10px;
+  border:1px solid var(--line-m);
+  background:rgba(7,7,7,0.65);backdrop-filter:blur(6px);
+  color:var(--t1);
+  transition:border-color 0.26s,color 0.26s,background 0.26s;
 }
-.badge.upcoming{border:1px solid var(--red);color:var(--red);background:var(--red-dim)}
-.badge.released{border:1px solid var(--line-m);color:var(--t2)}
-.bblink{width:4px;height:4px;border-radius:50%;background:var(--red);animation:blink 1.2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.sc-tag-sep{width:3px;height:3px;border-radius:50%;background:var(--red);flex-shrink:0;opacity:0.75}
+.scard:hover .sc-tag{border-color:var(--red);color:#fff;background:rgba(230,36,41,0.08)}
 
-.ctitle{
-  font-family:var(--fd);font-size:1.35rem;font-weight:600;
-  text-transform:uppercase;line-height:1;margin-bottom:5px;
+/* ── SEASON TABS ── */
+.season-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.season-tab{
+  font-family:var(--fm);font-size:0.56rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--t3);padding:7px 16px;border:1px solid var(--line);
+  transition:color 0.22s,border-color 0.22s,background 0.22s;cursor:pointer;user-select:none;
 }
-.cep{
-  font-family:var(--fm);font-size:0.56rem;color:var(--t2);
-  letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;
-  transition:color 0.26s;
-}
-.scard:hover .cep{color:var(--red)}
-.cdate{font-family:var(--fm);font-size:0.56rem;color:var(--t3);letter-spacing:0.1em;margin-bottom:10px}
-.cdown{
-  display:inline-block;font-family:var(--fd);font-size:0.9rem;
-  font-weight:500;letter-spacing:0.08em;
-  padding:4px 11px;border-left:2px solid var(--red);
-  background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);color:#fff;
-}
+.season-tab:hover{color:var(--t1);border-color:var(--line-m)}
+.season-tab.active{color:#fff;border-color:var(--red);background:var(--red-dim)}
 
-/* ─────────────────────────────────────────
-   DETAILS PANEL
-───────────────────────────────────────── */
-#detail{
-  position:fixed;inset:0;z-index:500;
-  display:flex;align-items:stretch;justify-content:flex-end;
-  pointer-events:none;
+/* ── SHOW HERO BANNER (на странице эпизодов сериала) ── */
+.show-hero{
+  position:relative;width:100%;height:240px;
+  margin-bottom:28px;overflow:hidden;
+  border:1px solid var(--line);
 }
-#detail.open{pointer-events:auto}
-
-/* backdrop */
-#detail-bd{
-  position:absolute;inset:0;background:rgba(0,0,0,0);
-  transition:background 0.45s var(--ease);
+.show-hero-bg{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0.35;filter:grayscale(0.45);
+  transition:opacity 0.5s var(--ease);
 }
-#detail.open #detail-bd{background:rgba(0,0,0,0.65);backdrop-filter:blur(4px)}
-
-/* drawer */
-#detail-drawer{
-  position:relative;z-index:1;
-  width:min(540px,100vw);
-  background:var(--bg2);
-  border-left:1px solid var(--line);
-  display:flex;flex-direction:column;
-  transform:translateX(100%);
-  transition:transform 0.5s var(--ease);
-  overflow:hidden;
+.show-hero:hover .show-hero-bg{opacity:0.5}
+.show-hero-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(11,11,11,0.95) 0%,rgba(11,11,11,0.4) 50%,transparent 100%);
 }
-#detail.open #detail-drawer{transform:translateX(0)}
-
-/* detail bar */
-#detail-bar{
-  flex-shrink:0;height:58px;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 30px;
-  background:rgba(11,11,11,0.96);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
+.show-hero-ct{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:26px 30px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  z-index:1;
 }
-#detail-type{
-  font-family:var(--fm);font-size:0.58rem;color:var(--t3);
+.show-hero-meta{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--fm);font-size:0.5rem;color:var(--t3);
   letter-spacing:0.22em;text-transform:uppercase;
 }
-#detail-close{
-  display:flex;align-items:center;gap:7px;
-  font-family:var(--fm);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--t2);padding:6px 13px;border:1px solid var(--line);
-  transition:color 0.22s,border-color 0.22s,background 0.22s;
+.show-hero-meta-dot{width:3px;height:3px;border-radius:50%;background:var(--red)}
+.show-hero-title{
+  font-family:var(--fd);font-size:clamp(1.4rem,3vw,2.3rem);
+  font-weight:700;text-transform:uppercase;line-height:1;
 }
+.show-hero-desc{
+  font-family:var(--fb);font-size:0.78rem;color:var(--t2);
+  line-height:1.55;max-width:560px;margin-top:2px;
+}
+/* Корнерные акценты */
+.show-hero::before,.show-hero::after{
+  content:'';position:absolute;width:14px;height:14px;z-index:2;
+  border-color:var(--red);
+}
+.show-hero::before{top:10px;left:10px;border-top:1px solid;border-left:1px solid}
+.show-hero::after{top:10px;right:10px;border-top:1px solid;border-right:1px solid}
+
+/* ── BADGE ── */
+/* Одинаковые размеры для ОЖИДАЕТСЯ и ВЫПУЩЕН.
+   cdown-spacer резервирует место таймера у released карточек. */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--fm);font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;
+  padding:4px 10px;min-height:22px;line-height:1;
+  margin-bottom:10px;flex-shrink:0;
+}
+.badge.upcoming{border:1px solid var(--red);color:var(--red);background:var(--red-dim)}
+.badge.released{border:1px solid var(--line-m);color:var(--t2);background:transparent}
+.bblink{width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+
+.ctitle{font-family:var(--fd);font-size:1.28rem;font-weight:600;text-transform:uppercase;line-height:1.05;margin-bottom:6px}
+.cep{font-family:var(--fm);font-size:0.54rem;color:var(--t2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;transition:color 0.26s}
+.scard:hover .cep,.shcard:hover .cep{color:var(--red)}
+.cdate{font-family:var(--fm);font-size:0.54rem;color:var(--t3);letter-spacing:0.1em;margin-bottom:12px}
+
+/* Таймер и спейсер — одинаковая высота */
+.cdown{
+  display:inline-block;font-family:var(--fd);font-size:0.88rem;
+  font-weight:500;letter-spacing:0.08em;
+  padding:5px 12px;border-left:2px solid var(--red);
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);color:#fff;
+  min-height:28px;
+}
+.cdown-spacer{display:block;min-height:28px}/* place-holder для released */
+
+/* ── ARCHIVE NOTE ── */
+.archive-note{
+  font-family:var(--fm);font-size:0.48rem;color:var(--red);
+  letter-spacing:0.16em;text-transform:uppercase;margin-bottom:8px;opacity:0.75;
+}
+
+/* ── ABOUT  (крупнее, до 1400px) ── */
+.about-wrap{
+  max-width:1400px;margin:0 auto;
+}
+/* Заголовок-герой */
+.about-hero{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:10px 0 30px;border-bottom:1px solid var(--line);margin-bottom:36px;
+  gap:24px;flex-wrap:wrap;
+}
+.about-hero-l{display:flex;flex-direction:column;gap:10px}
+.about-hero-tag{
+  font-family:var(--fm);font-size:0.6rem;color:var(--red);
+  letter-spacing:0.32em;text-transform:uppercase;
+}
+.about-hero-title{
+  font-family:var(--fd);font-size:clamp(2.2rem,4.5vw,4rem);
+  font-weight:700;text-transform:uppercase;line-height:0.95;letter-spacing:0.01em;
+}
+.about-hero-title em{font-style:normal;color:var(--red)}
+.about-hero-r{
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+  padding-top:6px;
+}
+.about-hero-since{font-family:var(--fm);font-size:0.6rem;color:var(--t3);letter-spacing:0.22em;text-transform:uppercase}
+.about-hero-id{font-family:var(--fm);font-size:0.72rem;color:var(--t1);letter-spacing:0.18em}
+
+/* Главный grid статистики — 4 колонки */
+.about-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  margin-bottom:10px;
+}
+.about-stat{
+  background:var(--card);border:1px solid var(--line);
+  padding:28px 26px 24px;
+  position:relative;overflow:hidden;
+  transition:background 0.28s,border-color 0.28s;
+}
+.about-stat::before{
+  content:'';position:absolute;top:0;left:0;width:2px;height:100%;
+  background:var(--red);transform:scaleY(0);transform-origin:top;
+  transition:transform 0.3s var(--ease);
+}
+.about-stat:hover{background:var(--card-h);border-color:var(--line-m)}
+.about-stat:hover::before{transform:scaleY(1)}
+.about-stat-n{
+  font-family:var(--fd);font-size:3.4rem;font-weight:700;
+  color:var(--t1);line-height:1;margin-bottom:10px;letter-spacing:0.01em;
+}
+.about-stat-n .unit{
+  font-size:1rem;color:var(--t2);font-weight:500;
+  letter-spacing:0.04em;margin-left:5px;
+}
+.about-stat-l{
+  font-family:var(--fm);font-size:0.54rem;color:var(--t3);
+  letter-spacing:0.22em;text-transform:uppercase;line-height:1.4;
+}
+
+/* Маленький ряд под главными цифрами — детали */
+.about-strip{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin-bottom:40px;
+}
+.about-strip-cell{
+  background:var(--card);border:1px solid var(--line);
+  padding:18px 22px;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:border-color 0.26s;
+}
+.about-strip-cell:hover{border-color:var(--line-m)}
+.about-strip-l{font-family:var(--fm);font-size:0.54rem;color:var(--t3);letter-spacing:0.18em;text-transform:uppercase}
+.about-strip-v{font-family:var(--fd);font-size:1.25rem;font-weight:600;color:var(--t1);letter-spacing:0.04em}
+.about-strip-v.red{color:var(--red)}
+
+/* Краткий описательный блок */
+.about-brief{
+  background:var(--card);border:1px solid var(--line);
+  padding:28px 32px;margin-bottom:40px;
+  display:flex;align-items:center;gap:28px;
+  transition:border-color 0.26s;
+}
+.about-brief:hover{border-color:var(--line-m)}
+.about-brief-mark{
+  font-family:var(--fm);font-size:0.54rem;color:var(--red);
+  letter-spacing:0.28em;text-transform:uppercase;flex-shrink:0;
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  border-left:1px solid var(--red);padding:0 0 0 12px;
+  align-self:stretch;display:flex;align-items:center;
+}
+.about-brief-text{font-size:0.95rem;color:var(--t2);line-height:1.75}
+.about-brief-text strong{color:var(--t1);font-weight:500}
+
+/* Команда */
+.about-team-head{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px;
+}
+.about-team-title{font-family:var(--fd);font-size:1.25rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.about-team-count{font-family:var(--fm);font-size:0.56rem;color:var(--t3);letter-spacing:0.2em;text-transform:uppercase}
+.about-team-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;
+}
+.team-card{
+  background:var(--card);border:1px solid var(--line);padding:22px 24px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  transition:background 0.28s,border-color 0.28s,transform 0.28s var(--ease);
+}
+.team-card:hover{background:var(--card-h);border-color:var(--line-m);transform:translateY(-2px)}
+.team-name{font-family:var(--fd);font-size:1.05rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.team-role{font-family:var(--fm);font-size:0.5rem;color:var(--t3);letter-spacing:0.18em;text-transform:uppercase;text-align:right;flex-shrink:0}
+
+/* ── DETAIL DRAWER ── */
+#detail{position:fixed;inset:0;z-index:500;display:flex;align-items:stretch;justify-content:flex-end;pointer-events:none}
+#detail.open{pointer-events:auto}
+#detail-bd{position:absolute;inset:0;background:rgba(0,0,0,0);transition:background 0.45s var(--ease)}
+#detail.open #detail-bd{background:rgba(0,0,0,0.65);backdrop-filter:blur(4px)}
+#detail-drawer{
+  position:relative;z-index:1;width:min(540px,100vw);
+  background:var(--bg2);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform 0.5s var(--ease);overflow:hidden;
+}
+#detail.open #detail-drawer{transform:translateX(0)}
+#detail-bar{flex-shrink:0;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;background:rgba(11,11,11,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+#detail-type{font-family:var(--fm);font-size:0.58rem;color:var(--t3);letter-spacing:0.22em;text-transform:uppercase}
+#detail-close{display:flex;align-items:center;gap:7px;font-family:var(--fm);font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--t2);padding:6px 13px;border:1px solid var(--line);transition:color 0.22s,border-color 0.22s,background 0.22s}
 #detail-close:hover{color:#fff;border-color:var(--line-m);background:rgba(255,255,255,0.04)}
 #detail-close svg{transition:transform 0.24s var(--ease)}
 #detail-close:hover svg{transform:rotate(90deg)}
-
-/* detail scroll body */
-#detail-body{
-  flex:1;overflow-y:auto;overflow-x:hidden;
-  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.07) transparent;
-}
+#detail-body{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.07) transparent}
 #detail-body::-webkit-scrollbar{width:3px}
 #detail-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.07);border-radius:2px}
-
-/* detail hero image */
-#d-hero{
-  width:100%;height:220px;
-  background-size:cover;background-position:center;
-  position:relative;flex-shrink:0;
-  filter:grayscale(0.3);
-}
-#d-hero::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(to bottom,transparent 40%,var(--bg2) 100%);
-}
-
-/* detail content */
+#d-hero{width:100%;height:220px;background-size:cover;background-position:center;position:relative;flex-shrink:0;filter:grayscale(0.3)}
+#d-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,var(--bg2) 100%)}
 #d-content{padding:28px 30px 40px}
-
 #d-badge-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-#d-title{
-  font-family:var(--fd);font-size:clamp(1.5rem,3.5vw,2rem);
-  font-weight:700;text-transform:uppercase;line-height:1;
-  margin-bottom:6px;letter-spacing:0.01em;
-}
-#d-ep{
-  font-family:var(--fm);font-size:0.6rem;color:var(--t2);
-  letter-spacing:0.12em;text-transform:uppercase;margin-bottom:18px;
-}
+#d-title{font-family:var(--fd);font-size:clamp(1.5rem,3.5vw,2rem);font-weight:700;text-transform:uppercase;line-height:1;margin-bottom:6px;letter-spacing:0.01em}
+#d-ep{font-family:var(--fm);font-size:0.6rem;color:var(--t2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:18px}
+/* visibility:hidden — место всегда занимает, контент не прыгает */
 #d-countdown-wrap{
-  display:inline-flex;align-items:center;gap:10px;
+  display:flex;align-items:center;gap:10px;
   padding:9px 16px;border:1px solid var(--line-m);
   margin-bottom:22px;background:rgba(0,0,0,0.35);
+  visibility:hidden;
 }
-#d-countdown-label{
-  font-family:var(--fm);font-size:0.54rem;color:var(--t3);
-  letter-spacing:0.2em;text-transform:uppercase;
-}
-#d-countdown{
-  font-family:var(--fd);font-size:1.05rem;font-weight:600;
-  letter-spacing:0.06em;color:#fff;
-}
-
-/* meta grid */
-#d-meta{
-  display:grid;grid-template-columns:1fr 1fr;gap:1px;
-  background:var(--line);margin-bottom:22px;
-}
-.d-meta-cell{
-  background:var(--bg2);padding:14px 16px;
-}
-.d-meta-label{
-  font-family:var(--fm);font-size:0.52rem;color:var(--t3);
-  letter-spacing:0.18em;text-transform:uppercase;margin-bottom:5px;
-}
-.d-meta-val{
-  font-family:var(--fd);font-size:0.85rem;font-weight:500;
-  letter-spacing:0.04em;color:var(--t1);line-height:1.3;
-}
-
-/* cast */
-#d-cast-label{
-  font-family:var(--fm);font-size:0.54rem;color:var(--t3);
-  letter-spacing:0.2em;text-transform:uppercase;margin-bottom:10px;
-}
+#d-countdown-wrap.active{visibility:visible}
+#d-countdown-label{font-family:var(--fm);font-size:0.54rem;color:var(--t3);letter-spacing:0.2em;text-transform:uppercase}
+#d-countdown{font-family:var(--fd);font-size:1.05rem;font-weight:600;letter-spacing:0.06em;color:#fff}
+#d-meta{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);margin-bottom:22px}
+.d-meta-cell{background:var(--bg2);padding:14px 16px}
+.d-meta-label{font-family:var(--fm);font-size:0.52rem;color:var(--t3);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:5px}
+.d-meta-val{font-family:var(--fd);font-size:0.85rem;font-weight:500;letter-spacing:0.04em;color:var(--t1);line-height:1.3}
+#d-cast-label{font-family:var(--fm);font-size:0.54rem;color:var(--t3);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:10px}
 #d-cast{display:flex;flex-direction:column;gap:8px;margin-bottom:26px}
-.cast-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:9px 14px;border:1px solid var(--line);
-  transition:border-color 0.22s,background 0.22s;
-}
+.cast-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border:1px solid var(--line);transition:border-color 0.22s,background 0.22s}
 .cast-row:hover{border-color:var(--line-m);background:rgba(255,255,255,0.02)}
 .cast-actor{font-size:0.82rem;font-weight:500;color:var(--t1)}
 .cast-role{font-family:var(--fm);font-size:0.56rem;color:var(--t3);letter-spacing:0.08em}
-
-/* action buttons */
 #d-actions{display:flex;flex-direction:column;gap:10px}
-
 .d-btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:14px 20px;
-  font-family:var(--fd);font-size:0.82rem;
-  font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
-  transition:background 0.26s,border-color 0.26s,color 0.26s,transform 0.26s var(--ease);
-  text-decoration:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 20px;
+  font-family:var(--fd);font-size:0.82rem;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
+  transition:background 0.26s,border-color 0.26s,color 0.26s,transform 0.26s var(--ease);text-decoration:none;
 }
-/* Watch button — primary */
 .d-btn.watch{background:var(--red);color:#fff;border:1px solid var(--red)}
 .d-btn.watch:hover{background:#ff2a2f;transform:translateX(3px)}
-/* Behind scenes button */
 .d-btn.behind{background:transparent;color:var(--t1);border:1px solid var(--line-m)}
 .d-btn.behind:hover{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);transform:translateX(3px)}
-/* Offline state — grey, non-clickable */
-.d-btn.offline{
-  background:transparent;color:var(--t3);border:1px solid var(--line);
-  cursor:default;pointer-events:none;
-}
-.d-btn.offline .btn-offline-tag{
-  font-family:var(--fm);font-size:0.48rem;letter-spacing:0.18em;
-  color:var(--t3);border:1px solid var(--line);padding:2px 6px;
-  text-transform:uppercase;
+.d-btn.offline{background:transparent;color:var(--t3);border:1px solid var(--line);cursor:default;pointer-events:none}
+.d-btn.offline .btn-offline-tag{font-family:var(--fm);font-size:0.48rem;letter-spacing:0.18em;color:var(--t3);border:1px solid var(--line);padding:2px 6px;text-transform:uppercase}
+.d-archive-warn{
+  font-family:var(--fm);font-size:0.56rem;color:var(--red);letter-spacing:0.16em;text-transform:uppercase;
+  padding:10px 14px;border:1px solid rgba(230,36,41,0.3);background:var(--red-dim);margin-bottom:4px;line-height:1.5;
 }
 
-/* ─────────────────────────────────────────
-   SCROLL REVEAL
-───────────────────────────────────────── */
+/* ── SCROLL REVEAL ── */
 .rv{opacity:0;transform:translateY(14px);transition:opacity 0.52s var(--ease),transform 0.52s var(--ease)}
 .rv.vis{opacity:1;transform:translateY(0)}
 
-/* ─────────────────────────────────────────
-   RESPONSIVE
-───────────────────────────────────────── */
+/* ── RESPONSIVE ── */
 @media(max-width:768px){
-  nav,.lbar,.lclose,#detail-bar{padding-left:20px;padding-right:20px}
+  nav,.lbar,#detail-bar{padding-left:20px;padding-right:20px}
+  .lclose{padding-left:10px;padding-right:10px}
   .lbody{padding:24px 20px 48px}
   .h-nav{flex-direction:column;gap:10px}
   .hbtn{width:88%;height:82px;flex-direction:row;gap:18px;padding:0 22px;justify-content:flex-start}
   .hbtn-icon{margin-bottom:0;width:28px;height:28px}
   .hbtn-sub{display:none}
-  .mgrid,.sgrid{grid-template-columns:1fr}
+  .mgrid{grid-template-columns:1fr}
+  .sgrid{grid-template-columns:1fr}
+  .about-stats{grid-template-columns:repeat(2,1fr)}
+  .about-strip{grid-template-columns:1fr}
+  .about-brief{flex-direction:column;align-items:flex-start;gap:14px}
+  .about-brief-mark{writing-mode:initial;transform:none;border-left:none;border-top:1px solid var(--red);padding:10px 0 0;align-self:stretch}
+  .show-hero{height:200px}
+  .show-hero-ct{padding:20px 22px}
   #detail-drawer{width:100vw;border-left:none}
+  .i-corner.tl,.i-corner.tr{display:none}
 }
 </style>
 </head>
@@ -491,17 +548,28 @@ nav{
 
 <canvas id="cvs"></canvas>
 
-<!-- INTRO -->
+<!-- SPLASH  (scan-line удалён) -->
 <div id="intro">
-  <div class="ib"></div>
-  <div class="il">ALCALIX</div>
-  <div class="is">Studios &nbsp;·&nbsp; Official Universe</div>
+  <div class="i-corner tl"></div>
+  <div class="i-corner tr"></div>
+  <div class="i-corner bl"></div>
+  <div class="i-corner br"></div>
+  <div class="i-sys">ALC · CINEMATIC UNIVERSE · OFFICIAL</div>
+  <div class="i-center">
+    <div class="i-logo"><span class="i-logo-inner glitch">ALCALIX</span></div>
+    <div class="i-bar"></div>
+    <div class="i-sub">Studios &nbsp;·&nbsp; Official Universe</div>
+  </div>
+  <div class="i-bottom"><span class="i-blink"></span><span>Загрузка вселенной</span></div>
 </div>
 
 <!-- NAV -->
 <nav>
-  <div class="nlogo"><span class="npip"></span>ALCALIX</div>
-  <div class="nclock" id="nclock">--:--:--</div>
+  <div class="nlogo" id="nav-logo"><span class="npip"></span>ALCALIX</div>
+  <div class="nright">
+    <span class="nav-link" data-panel="about">О Студии</span>
+    <div class="nclock" id="nclock">--:--:--</div>
+  </div>
 </nav>
 
 <!-- HOME -->
@@ -510,11 +578,9 @@ nav{
   <h1 class="h-title">ВСЕЛЕННАЯ<br><em>БЕЗ</em> ГРАНИЦ</h1>
   <p class="h-sub">Официальная кинематографическая вселенная Alcalix Studios. Фильмы, сериалы и спешлы.</p>
   <div class="h-nav">
-
-    <button class="hbtn" onclick="openList('movies')">
+    <button class="hbtn" data-panel="movies">
       <span class="hbtn-n" id="hmc"></span>
-      <!-- Film icon -->
-      <svg class="hbtn-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="hbtn-icon" viewBox="0 0 36 36" fill="none">
         <rect x="4" y="8" width="28" height="20" rx="1" stroke="currentColor" stroke-width="1.6"/>
         <line x1="4" y1="13" x2="32" y2="13" stroke="currentColor" stroke-width="1.2"/>
         <line x1="4" y1="23" x2="32" y2="23" stroke="currentColor" stroke-width="1.2"/>
@@ -524,11 +590,9 @@ nav{
       <span class="hbtn-label">Фильмы</span>
       <span class="hbtn-sub">Cinematic Releases</span>
     </button>
-
-    <button class="hbtn" onclick="openList('series')">
+    <button class="hbtn" data-panel="series">
       <span class="hbtn-n" id="hsc"></span>
-      <!-- TV icon -->
-      <svg class="hbtn-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="hbtn-icon" viewBox="0 0 36 36" fill="none">
         <rect x="4" y="9" width="28" height="18" rx="1" stroke="currentColor" stroke-width="1.6"/>
         <line x1="12" y1="28" x2="24" y2="28" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         <line x1="18" y1="27" x2="18" y2="29" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -536,18 +600,26 @@ nav{
       <span class="hbtn-label">Сериалы</span>
       <span class="hbtn-sub">Episodic Chronicles</span>
     </button>
-
+    <button class="hbtn" data-panel="about">
+      <svg class="hbtn-icon" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="18" cy="12" r="2" fill="currentColor"/>
+        <line x1="18" y1="17" x2="18" y2="26" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span class="hbtn-label">О Студии</span>
+      <span class="hbtn-sub">About Us</span>
+    </button>
   </div>
 </div>
 
-<!-- MOVIES LIST PANEL -->
+<!-- MOVIES PANEL -->
 <div class="lpanel" id="lp-movies">
   <div class="lbar">
     <div class="lbar-l">
       <span class="lbar-title">Фильмы</span>
       <span class="lbar-ct" id="lct-movies"></span>
     </div>
-    <button class="lclose" onclick="closeList('movies')">
+    <button class="lclose" data-close="movies">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.4"/></svg>
       Закрыть
     </button>
@@ -555,14 +627,14 @@ nav{
   <div class="lbody" id="lb-movies"></div>
 </div>
 
-<!-- SERIES LIST PANEL -->
+<!-- SERIES PANEL  (список сериалов) -->
 <div class="lpanel" id="lp-series">
   <div class="lbar">
     <div class="lbar-l">
       <span class="lbar-title">Сериалы</span>
       <span class="lbar-ct" id="lct-series"></span>
     </div>
-    <button class="lclose" onclick="closeList('series')">
+    <button class="lclose" data-close="series">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.4"/></svg>
       Закрыть
     </button>
@@ -570,13 +642,43 @@ nav{
   <div class="lbody" id="lb-series"></div>
 </div>
 
-<!-- DETAILS DRAWER -->
+<!-- EPISODES PANEL  (серии выбранного сериала) -->
+<div class="lpanel" id="lp-episodes">
+  <div class="lbar">
+    <div class="lbar-l">
+      <span class="lbar-title" id="ep-panel-title">Серии</span>
+      <span class="lbar-ct" id="ep-panel-ct"></span>
+    </div>
+    <button class="lclose" id="ep-panel-back">
+      <svg class="lclose-arrow" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M7 1L3 5L7 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Назад
+    </button>
+  </div>
+  <div class="lbody" id="lb-episodes"></div>
+</div>
+
+<!-- ABOUT PANEL -->
+<div class="lpanel" id="lp-about">
+  <div class="lbar">
+    <div class="lbar-l">
+      <span class="lbar-title">О Студии</span>
+      <span class="lbar-ct">ALCALIX</span>
+    </div>
+    <button class="lclose" data-close="about">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.4"/></svg>
+      Закрыть
+    </button>
+  </div>
+  <div class="lbody" id="lb-about"></div>
+</div>
+
+<!-- DETAIL DRAWER -->
 <div id="detail">
-  <div id="detail-bd" onclick="closeDetail()"></div>
+  <div id="detail-bd"></div>
   <div id="detail-drawer">
     <div id="detail-bar">
-      <span id="detail-type">— Фильм</span>
-      <button id="detail-close" onclick="closeDetail()">
+      <span id="detail-type"></span>
+      <button id="detail-close">
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="currentColor" stroke-width="1.4"/></svg>
         Закрыть
       </button>
@@ -587,9 +689,9 @@ nav{
         <div id="d-badge-row"></div>
         <h2 id="d-title"></h2>
         <div id="d-ep"></div>
-        <div id="d-countdown-wrap" style="display:none">
+        <div id="d-countdown-wrap">
           <span id="d-countdown-label">Премьера через</span>
-          <span id="d-countdown">--</span>
+          <span id="d-countdown"></span>
         </div>
         <div id="d-meta"></div>
         <div id="d-cast-label">В ГЛАВНЫХ РОЛЯХ</div>
@@ -601,402 +703,719 @@ nav{
 </div>
 
 <script>
+'use strict';
+
 /* ══════════════════════════════════════════════════
-   ALCALIX STUDIOS — БАЗА ДАННЫХ
-   ══════════════════════════════════════════════════
+   ╔══════════════════════════════════════════╗
+   ║      ALCALIX STUDIOS — БАЗА ДАННЫХ       ║
+   ╚══════════════════════════════════════════╝
 
-   ─── КАК ЗАПОЛНЯТЬ ───────────────────────────────
+   ── ФИЛЬМЫ ─────────────────────────────────
+   Каждый объект в MOVIES:
+     title / status("released"|"upcoming") / premiereISO / bg
+     genre / duration / director / year
+     cast  — [{actor, role}, ...]
+     btnWatch  / btnBehind — {show, online, link}
 
-   ОБЩИЕ ПОЛЯ (фильмы и сериалы):
-     title        — Название
-     status       — "released" | "upcoming"
-     premiereISO  — "2026-12-25T20:00:00"
-                    upcoming → цель таймера
-                    released → дата выхода
-     bg           — URL обложки (или "" если нет)
-     link         — ссылка на просмотр (или "" / "#")
+   ── СЕРИАЛЫ ────────────────────────────────
+   SHOW_SERIES — массив сериалов.
+   Каждое шоу:
+     id           — уникальный ("alcalix")
+     title        — название сериала
+     bg           — URL обложки. Используется и в карточке
+                    в списке "СЕРИАЛЫ", и в hero-баннере
+                    на странице эпизодов.
+                    Пустая строка "" = без фото.
+     description  — короткое описание (показывается в hero)
+     episodes     — массив эпизодов
 
-   ДЕТАЛИ (открываются в боковой панели):
-     genre        — жанр, напр. "Sci-Fi / Drama"
-     duration     — длительность, напр. "1ч 54м" (фильмы) / "45 мин / эп." (серии)
-     director     — режиссёр
-     year         — год, напр. "2024"
-     cast         — массив { actor, role }
-       actor      — имя актёра
-       role       — роль, напр. "Главный герой"
+   Каждый эпизод:
+     season(число) / episode(число) / title / status / premiereISO
+     bg / genre / duration / director / year
+     cast / btnWatch / btnBehind
+     archived — true если архив утерян
 
-   КНОПКИ:
-     btnWatch     — кнопка "СМОТРЕТЬ"
-       show       — true | false   (скрыть/показать)
-       online     — true | false   (true = работает, false = серая/offline)
-       link       — ссылка (если online: true)
-
-     btnBehind    — кнопка "ФИЛЬМ О ФИЛЬМЕ"
-       show       — true | false
-       online     — true | false
-       link       — ссылка
-
-   ТОЛЬКО ДЛЯ СЕРИАЛОВ:
-     episode      — "Season 1 // Episode 8"
-
-   ══════════════════════════════════════════════════ */
+   !! Кнопки сезонов создаются АВТОМАТИЧЕСКИ
+      из значений поля season в episodes.
+      Просто добавьте эпизод с season:3 —
+      и кнопка "Сезон 3" появится сама.
+   ═══════════════════════════════════════════ */
 
 const MOVIES = [
   {
-    title: "Первый Контакт",
-    status: "released",
-    premiereISO: "2024-12-25T20:00:00",
-    bg: "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2094&auto=format&fit=crop",
-    genre: "Sci-Fi / Thriller",
-    duration: "1ч 58м",
-    director: "А. Калин",
-    year: "2024",
-    cast: [
-      { actor: "Иван Морозов",  role: "Командир миссии" },
-      { actor: "Елена Сова",    role: "Аналитик" },
-      { actor: "Дмитрий Лер",   role: "Инженер связи" },
-    ],
-    btnWatch:  { show: true,  online: true,  link: "#" },
-    btnBehind: { show: true,  online: false, link: "" },
-  },
-  {
-    title: "Вне Системы",
-    status: "upcoming",
-    premiereISO: "2026-09-14T18:30:00",
-    bg: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=2072&auto=format&fit=crop",
-    genre: "Action / Drama",
-    duration: "2ч 10м",
-    director: "А. Калин",
-    year: "2026",
-    cast: [
-      { actor: "Иван Морозов",  role: "Протагонист" },
-      { actor: "Анна Вейс",     role: "Антагонист" },
-    ],
-    btnWatch:  { show: true,  online: false, link: "" },
-    btnBehind: { show: false, online: false, link: "" },
   },
 ];
 
-const SERIES = [
+const SHOW_SERIES = [
   {
+    id: "alcalix",
     title: "Новое для Новых",
-    status: "released",
-    premiereISO: "2024-11-10T12:00:00",
-    episode: "Season 2 // Episode 1",
     bg: "",
-    genre: "Cyber / Drama",
-    duration: "1:43 мин",
-    director: "OXeall",
-    year: "2024",
-    cast: [
-      { actor: "Влад",    role: "Deadly" },
-      { actor: "Влад",    role: "Lucas" },
-      { actor: "Костя",    role: "KostyaLom" },
-      { actor: "Денис",    role: "Captain" },
-      { actor: "Ярик",    role: "Alex" },
+    description: "Кибер-драма о людях, которые только начинают свой путь в новом мире.",
+    episodes: [
+      /* ── СЕЗОН 1  (архив утерян) ── */
+      {
+        season:1, episode:1, title:"Первый шаг",
+        status:"released", premiereISO:"2024-09-22T12:00:00",
+        bg:"", genre:"Cyber / Drama", duration:"~2 мин", director:"OXeall", year:"2024",
+        cast:[
+          {actor:"Влад",role:"Deadly"},{actor:"Влад",role:"Lucas"},
+          {actor:"Костя",role:"KostyaLom"},{actor:"Денис",role:"Captain"},{actor:"Ярик",role:"Alex"},
+        ],
+        btnWatch:{show:true,online:false,link:""}, btnBehind:{show:true,online:false,link:""},
+        archived:true,
+      },
+      {
+        season:1, episode:2, title:"Новые правила",
+        status:"released", premiereISO:"2024-10-06T12:00:00",
+        bg:"", genre:"Cyber / Drama", duration:"~2 мин", director:"OXeall", year:"2024",
+        cast:[
+      { actor: "Влад Б.", role: "Deadly" },
+      { actor: "Влад К.",   role: "Lucas" },
+      { actor: "Костя П.",  role: "KostyaLom" },
+      { actor: "Денис П.",  role: "Captain" },
+      { actor: "Ярик К.",  role: "Alex" },
+        ],
+        btnWatch:{show:true,online:false,link:""}, btnBehind:{show:false,online:false,link:""},
+        archived:true,
+      },
+      {
+        season:1, episode:3, title:"Граница",
+        status:"released", premiereISO:"2024-10-20T12:00:00",
+        bg:"", genre:"Cyber / Drama", duration:"~2 мин", director:"OXeall", year:"2024",
+        cast:[
+      { actor: "Влад Б.", role: "Deadly" },
+      { actor: "Влад К.",   role: "Lucas" },
+      { actor: "Костя П.",  role: "KostyaLom" },
+      { actor: "Денис П.",  role: "Captain" },
+      { actor: "Ярик К.",  role: "Alex" },
+        ],
+        btnWatch:{show:true,online:false,link:""}, btnBehind:{show:false,online:false,link:""},
+        archived:true,
+      },
+      {
+        season:1, episode:4, title:"Точка невозврата",
+        status:"released", premiereISO:"2024-11-03T12:00:00",
+        bg:"", genre:"Cyber / Drama", duration:"~2 мин", director:"OXeall", year:"2024",
+        cast:[
+      { actor: "Влад Б.", role: "Deadly" },
+      { actor: "Влад К.",   role: "Lucas" },
+      { actor: "Костя П.",  role: "KostyaLom" },
+      { actor: "Денис П.",  role: "Captain" },
+      { actor: "Ярик К.",  role: "Alex" },
+        ],
+        btnWatch:{show:true,online:false,link:""}, btnBehind:{show:false,online:false,link:""},
+        archived:true,
+      },
+      {
+        season:1, episode:5, title:"Финал сезона",
+        status:"released", premiereISO:"2024-11-17T12:00:00",
+        bg:"", genre:"Cyber / Drama", duration:"~2 мин", director:"OXeall", year:"2024",
+        cast:[
+      { actor: "Влад Б.", role: "Deadly" },
+      { actor: "Влад К.",   role: "Lucas" },
+      { actor: "Костя П.",  role: "KostyaLom" },
+      { actor: "Денис П.",  role: "Captain" },
+      { actor: "Ярик К.",  role: "Alex" },
+        ],
+        btnWatch:{show:true,online:false,link:""}, btnBehind:{show:false,online:false,link:""},
+        archived:true,
+      },
+      /* ── СЕЗОН 2 ── */
+      {
+        season:2, episode:1, title:"Новое для Новых",
+        status:"released", premiereISO:"2024-11-10T12:00:00",
+        bg:"", genre:"Cyber / Drama", duration:"1:43 мин", director:"OXeall", year:"2024",
+        cast:[
+      { actor: "Влад Б.", role: "Deadly" },
+      { actor: "Влад К.",   role: "Lucas" },
+      { actor: "Костя П.",  role: "KostyaLom" },
+      { actor: "Денис П.",  role: "Captain" },
+      { actor: "Ярик К.",  role: "Alex" },
+        ],
+        btnWatch:{show:true,online:true,link:"https://www.youtube.com/watch?v=CQewJr2s7hw"}, btnBehind:{show:true,online:false,link:""},
+      },
+      {
+        season:2, episode:2, title:"???",
+        status:"upcoming", premiereISO:"2026-06-22T12:00:00",
+        bg:"", genre:"Mystery / Sci-Fi", duration:"10:00 мин", director:"OXeall", year:"2026",
+        cast:[
+      { actor: "Влад Б.", role: "Deadly" },
+      { actor: "Влад К.",   role: "Lucas" },
+      { actor: "Костя П.",  role: "KostyaLom" },
+      { actor: "Денис П.",  role: "Captain" },
+      { actor: "Ярик К.",  role: "Alex" },
+        ],
+        btnWatch:{show:false,online:false,link:""}, btnBehind:{show:false,online:false,link:""},
+      },
+      /* Добавьте эпизод с season:3 — кнопка появится автоматически */
     ],
-    btnWatch:  { show: true,  online: true,  link: "#" },
-    btnBehind: { show: true,  online: false,  link: "#" },
   },
-  {
-    title: "???",
-    status: "upcoming",
-    premiereISO: "2026-06-22T12:00:00",
-    episode: "Season 2 // Episode 2",
-    bg: "",
-    genre: "Mystery / Sci-Fi",
-    duration: "???",
-    director: "OXeall",
-    year: "2026",
-    cast: [
-      { actor: "Влад",    role: "Deadly" },
-      { actor: "Влад",    role: "Lucas" },
-      { actor: "Костя",    role: "KostyaLom" },
-      { actor: "Денис",    role: "Captain" },
-      { actor: "Ярик",    role: "Alex" },
-    ],
-    btnWatch:  { show: true,  online: true,  link: "#" },
-    btnBehind: { show: false, online: false, link: "" },
-  },
+  /* Добавьте сюда ещё один сериал — объект с id/title/bg/description/episodes */
 ];
+
+const ABOUT = {
+  tagline: "Независимая кинематографическая вселенная",
+  description: `<strong>Alcalix Studios</strong> - независимая студия, строящая собственную
+    кинематографическую вселенную с нуля. Фильмы, сериалы и спешлы, объединённые единым
+    каноном.`,
+  team: [
+    { name: "OXeall", role: "Режиссёр / Автор" },
+    { name: "OXeall",   role: "Режиссёр / Монтаж" },
+  ],
+};
 
 /* ══════════════════════════════════════════════════
-   COUNTDOWN
+   UTILITIES
    ══════════════════════════════════════════════════ */
 function getCountdown(iso) {
-  const diff = new Date(iso) - new Date();
+  const diff = new Date(iso) - Date.now();
   if (diff <= 0) return null;
   const s = Math.floor(diff / 1000);
   const d = Math.floor(s / 86400);
   const h = Math.floor((s % 86400) / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sc = s % 60;
-  const p = n => String(n).padStart(2,'0');
+  const p = n => String(n).padStart(2, '0');
   return d >= 1 ? `${d}Д ${p(h)}Ч ${p(m)}М ${p(sc)}С` : `${p(h)}Ч ${p(m)}М ${p(sc)}С`;
 }
-
 function fmtDate(iso) {
-  return new Date(iso).toLocaleDateString('ru-RU', {day:'numeric',month:'long',year:'numeric'});
+  return new Date(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+}
+function badgeHTML(status) {
+  const up = status === 'upcoming';
+  return `<div class="badge ${up?'upcoming':'released'}">${up?'<span class="bblink"></span>Ожидается':'Выпущен'}</div>`;
+}
+const ICON_PLAY = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="3,1 13,7 3,13" fill="currentColor"/></svg>`;
+const ICON_INFO = `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><line x1="7" y1="4" x2="7" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="9.5" r="0.7" fill="currentColor"/></svg>`;
+
+/* ══════════════════════════════════════════════════
+   SCROLL REVEAL
+   ══════════════════════════════════════════════════ */
+let rvObserver = null;
+function attachReveal(scrollRoot) {
+  if (rvObserver) rvObserver.disconnect();
+  rvObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('vis'); rvObserver.unobserve(e.target); }
+    });
+  }, { root: scrollRoot, threshold: 0.04, rootMargin: '0px 0px 80px 0px' });
+  scrollRoot.querySelectorAll('.rv').forEach(el => rvObserver.observe(el));
 }
 
 /* ══════════════════════════════════════════════════
-   RENDER MOVIE CARDS
+   STATE
+   ══════════════════════════════════════════════════ */
+let activePanel    = null;
+let activeShowId   = null;
+let activeSeason   = null;
+let detailActiveISO = null;
+
+/* ══════════════════════════════════════════════════
+   PANEL NAVIGATION
+   ══════════════════════════════════════════════════ */
+function openPanel(type) {
+  if (activePanel === type) return;
+  if (activePanel) _slideOut(activePanel);
+  activePanel = type;
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById(`lp-${type}`).classList.add('open');
+  setTimeout(() => attachReveal(document.getElementById(`lb-${type}`)), 80);
+}
+function closePanel(type) {
+  if (activePanel !== type) return;
+  activePanel = null;
+  closeDetail();
+  document.getElementById('home').classList.remove('hidden');
+  _slideOut(type);
+}
+function _slideOut(type) {
+  const panel = document.getElementById(`lp-${type}`);
+  panel.classList.remove('open');
+  setTimeout(() => {
+    const body = document.getElementById(`lb-${type}`);
+    if (body) body.scrollTop = 0;
+    panel.querySelectorAll('.rv').forEach(el => el.classList.remove('vis'));
+  }, 560);
+}
+function goHome() {
+  if (document.getElementById('detail').classList.contains('open')) { closeDetail(); return; }
+  if (document.getElementById('lp-episodes').classList.contains('open')) { closeEpisodesPanel(); return; }
+  if (activePanel) closePanel(activePanel);
+}
+
+/* Episodes panel */
+function openEpisodesPanel(showId) {
+  const show = SHOW_SERIES.find(s => s.id === showId);
+  if (!show) return;
+  activeShowId = showId;
+  const seasons = [...new Set(show.episodes.map(e => e.season))].sort((a,b) => a - b);
+  activeSeason = seasons[0];
+  document.getElementById('ep-panel-title').textContent = show.title;
+  document.getElementById('ep-panel-ct').textContent =
+    `${show.episodes.length} эп · ${seasons.length} сез`;
+  _buildEpisodesBody(show, seasons, activeSeason);
+  document.getElementById('lp-episodes').classList.add('open');
+  setTimeout(() => attachReveal(document.getElementById('lb-episodes')), 80);
+}
+function closeEpisodesPanel() {
+  closeDetail();
+  document.getElementById('lp-episodes').classList.remove('open');
+  activeShowId = null; activeSeason = null;
+  setTimeout(() => {
+    document.getElementById('lb-episodes').scrollTop = 0;
+    document.getElementById('lp-episodes').querySelectorAll('.rv').forEach(el => el.classList.remove('vis'));
+  }, 560);
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER — MOVIES
    ══════════════════════════════════════════════════ */
 function renderMovies() {
   const body = document.getElementById('lb-movies');
-  body.innerHTML = `
-    <div class="lsec-head">
-      <span class="lsec-title">Cinematic Releases</span>
-      <span class="lsec-label">${MOVIES.length} film${MOVIES.length!==1?'s':''}</span>
-    </div>
-    <div class="mgrid" id="mgrid"></div>`;
+  const grid = document.createElement('div');
+  grid.className = 'mgrid';
 
-  const grid = document.getElementById('mgrid');
   MOVIES.forEach((m, i) => {
     const up = m.status === 'upcoming';
-    const el = document.createElement('div');
-    el.className = 'mcard rv';
-    el.style.transitionDelay = `${i*0.06}s`;
-    el.onclick = () => openDetail(m, 'film');
-    const bg = m.bg ? `background-image:url('${m.bg}')` : 'background:#111';
-    el.innerHTML = `
-      <div class="mc-bg" style="${bg}"></div>
+    const card = document.createElement('div');
+    card.className = 'mcard rv';
+    card.style.transitionDelay = `${i * 0.07}s`;
+    card.addEventListener('click', () => openDetail(m, 'film'));
+    const bgStyle = m.bg ? `background-image:url('${m.bg}')` : 'background:#111';
+    card.innerHTML = `
+      <div class="mc-bg" style="${bgStyle}"></div>
       <div class="mc-ov"></div>
       <div class="mc-ct">
-        <div class="badge ${up?'upcoming':'released'}">${up?'<span class="bblink"></span>Ожидается':'Выпущен'}</div>
+        ${badgeHTML(m.status)}
         <h3 class="ctitle">${m.title}</h3>
         <div class="cdate">${fmtDate(m.premiereISO)}</div>
-        ${up?`<div class="cdown" data-cd="${m.premiereISO}">...</div>`:''}
+        ${up ? `<div class="cdown" data-cd="${m.premiereISO}">...</div>` : `<div class="cdown-spacer"></div>`}
       </div>`;
-    grid.appendChild(el);
+    grid.appendChild(card);
   });
 
+  body.innerHTML = `
+    <div class="lsec-head rv">
+      <span class="lsec-title">Cinematic Releases</span>
+      <span class="lsec-label">${MOVIES.length} film${MOVIES.length!==1?'s':''}</span>
+    </div>`;
+  body.appendChild(grid);
   document.getElementById('lct-movies').textContent = `${MOVIES.length} Films`;
   document.getElementById('hmc').textContent = MOVIES.length;
 }
 
 /* ══════════════════════════════════════════════════
-   RENDER SERIES CARDS
+   RENDER — SERIES LIST (карточки сериалов)
    ══════════════════════════════════════════════════ */
 function renderSeries() {
   const body = document.getElementById('lb-series');
-  body.innerHTML = `
-    <div class="lsec-head">
-      <span class="lsec-title">Episodic Chronicles</span>
-      <span class="lsec-label">${SERIES.length} series</span>
-    </div>
-    <div class="sgrid" id="sgrid"></div>`;
+  const grid = document.createElement('div');
+  grid.className = 'mgrid';
+  const totalEp = SHOW_SERIES.reduce((a,s) => a + s.episodes.length, 0);
 
-  const grid = document.getElementById('sgrid');
-  SERIES.forEach((s, i) => {
-    const up = s.status === 'upcoming';
-    const el = document.createElement('div');
-    el.className = 'scard rv';
-    el.style.transitionDelay = `${i*0.06}s`;
-    el.onclick = () => openDetail(s, 'series');
-    el.innerHTML = `
-      <span class="sc-num">${String(i+1).padStart(2,'0')}</span>
-      <div class="badge ${up?'upcoming':'released'}" style="margin-bottom:10px">${up?'<span class="bblink"></span>Ожидается':'Выпущен'}</div>
-      <div class="cep">${s.episode||''}</div>
-      <h4 class="ctitle">${s.title}</h4>
-      <div class="cdate">${fmtDate(s.premiereISO)}</div>
-      ${up?`<div class="cdown" data-cd="${s.premiereISO}">...</div>`:''}`;
-    grid.appendChild(el);
+  SHOW_SERIES.forEach((show, i) => {
+    const seasons = [...new Set(show.episodes.map(e => e.season))].sort((a,b) => a-b);
+    // Последний вышедший или ближайший upcoming эпизод
+    const lastReleased = [...show.episodes].filter(e=>e.status==='released').pop();
+    const nextUpcoming = show.episodes.find(e=>e.status==='upcoming');
+    const hasUpcoming  = !!nextUpcoming;
+    const displayEp    = nextUpcoming || lastReleased || show.episodes[show.episodes.length-1];
+
+    const card = document.createElement('div');
+    card.className = 'shcard rv';
+    card.style.transitionDelay = `${i * 0.07}s`;
+    card.addEventListener('click', () => openEpisodesPanel(show.id));
+
+    const bgStyle = show.bg ? `background-image:url('${show.bg}')` : 'background:#111';
+    card.innerHTML = `
+      <div class="sh-bg" style="${bgStyle}"></div>
+      <div class="sh-ov"></div>
+      <div class="sh-tag">${seasons.length} сез · ${show.episodes.length} эп</div>
+      <div class="sh-ct">
+        ${badgeHTML(hasUpcoming ? 'upcoming' : 'released')}
+        <h3 class="ctitle">${show.title}</h3>
+        <div class="cdate">S${displayEp.season} E${String(displayEp.episode).padStart(2,'0')} &nbsp;·&nbsp; ${fmtDate(displayEp.premiereISO)}</div>
+        ${hasUpcoming
+          ? `<div class="cdown" data-cd="${nextUpcoming.premiereISO}">...</div>`
+          : `<div class="cdown-spacer"></div>`}
+      </div>`;
+    grid.appendChild(card);
   });
 
-  document.getElementById('lct-series').textContent = `${SERIES.length} Series`;
-  document.getElementById('hsc').textContent = SERIES.length;
+  body.innerHTML = `
+    <div class="lsec-head rv">
+      <span class="lsec-title">Episodic Chronicles</span>
+      <span class="lsec-label">${SHOW_SERIES.length} show${SHOW_SERIES.length!==1?'s':''} · ${totalEp} ep</span>
+    </div>`;
+  body.appendChild(grid);
+  document.getElementById('lct-series').textContent = `${SHOW_SERIES.length} Shows`;
+  document.getElementById('hsc').textContent = SHOW_SERIES.length;
 }
 
 /* ══════════════════════════════════════════════════
-   DETAILS
+   RENDER — EPISODES (внутри сериала)
+   Кнопки сезонов — автоматически из данных
    ══════════════════════════════════════════════════ */
-let detailActiveISO = null;
+function _buildEpisodesBody(show, seasons, currentSeason) {
+  const body = document.getElementById('lb-episodes');
 
+  /* Табы сезонов — генерируются из массива seasons */
+  const tabsHTML = seasons.map(s =>
+    `<button class="season-tab${s===currentSeason?' active':''}" data-season="${s}">Сезон ${s}</button>`
+  ).join('');
+
+  const filtered = show.episodes.filter(e => e.season === currentSeason);
+  const grid = document.createElement('div');
+  grid.className = 'sgrid';
+
+  filtered.forEach((ep, i) => {
+    const up = ep.status === 'upcoming';
+    const card = document.createElement('div');
+    card.className = 'scard rv';
+    card.style.transitionDelay = `${i * 0.07}s`;
+    card.addEventListener('click', () => openDetail(ep, 'series'));
+
+    card.innerHTML = `
+      <div class="sc-tag">
+        <span>Сезон ${ep.season}</span>
+        <span class="sc-tag-sep"></span>
+        <span>Серия ${ep.episode}</span>
+      </div>
+      <span class="sc-num">${String(ep.episode).padStart(2,'0')}</span>
+      <div class="sc-inner">
+        ${badgeHTML(ep.status)}
+        ${ep.archived ? `<div class="archive-note">⚠ Архив утерян</div>` : ''}
+        <h4 class="ctitle">${ep.title}</h4>
+        <div class="cdate">${fmtDate(ep.premiereISO)}</div>
+        ${up
+          ? `<div class="cdown" data-cd="${ep.premiereISO}">...</div>`
+          : `<div class="cdown-spacer"></div>`}
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  body.innerHTML = `
+    <div class="lsec-head rv">
+      <span class="lsec-title">${show.title}</span>
+      <span class="lsec-label">${filtered.length} эп · Сезон ${currentSeason}</span>
+    </div>
+    <div class="show-hero rv">
+      <div class="show-hero-bg" style="${show.bg ? `background-image:url('${show.bg}')` : 'background:#111'}"></div>
+      <div class="show-hero-ov"></div>
+      <div class="show-hero-ct">
+        <div class="show-hero-meta">
+          <span>${seasons.length} сезон${seasons.length>1?'ов':''}</span>
+          <span class="show-hero-meta-dot"></span>
+          <span>${show.episodes.length} эпизод${show.episodes.length===1?'':(show.episodes.length<5?'а':'ов')}</span>
+          ${show.episodes.some(e=>e.status==='upcoming') ? `
+            <span class="show-hero-meta-dot"></span>
+            <span style="color:var(--red)">в производстве</span>
+          ` : ''}
+        </div>
+        <div class="show-hero-title">${show.title}</div>
+        ${show.description ? `<div class="show-hero-desc">${show.description}</div>` : ''}
+      </div>
+    </div>
+    <div class="season-tabs rv">${tabsHTML}</div>`;
+  body.appendChild(grid);
+
+  /* Обработчики вкладок */
+  body.querySelectorAll('.season-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = parseInt(btn.dataset.season, 10);
+      if (s === activeSeason) return;
+      activeSeason = s;
+      _buildEpisodesBody(show, seasons, s);
+      setTimeout(() => attachReveal(body), 40);
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER — ABOUT
+   ══════════════════════════════════════════════════ */
+function renderAbout() {
+  const body = document.getElementById('lb-about');
+
+  /* ── Сбор всех эпизодов сериалов в плоский массив ── */
+  const allEpisodes = SHOW_SERIES.flatMap(s => s.episodes);
+  const totalEp     = allEpisodes.length;
+  const releasedEp  = allEpisodes.filter(e => e.status === 'released').length;
+  const upcomingEp  = allEpisodes.filter(e => e.status === 'upcoming').length;
+  const upcomingMv  = MOVIES.filter(m => m.status === 'upcoming').length;
+  const releasedMv  = MOVIES.length - upcomingMv;
+  const archivedEp  = allEpisodes.filter(e => e.archived).length;
+
+  /* Уникальные актёры по всем проектам */
+  const allCast = [...MOVIES, ...allEpisodes].flatMap(p => (p.cast || []).map(c => c.actor));
+  const uniqueActors = new Set(allCast).size;
+
+  /* Уникальные режиссёры */
+  const uniqueDirectors = new Set(
+    [...MOVIES, ...allEpisodes].map(p => p.director).filter(Boolean)
+  ).size;
+
+  /* Ближайшая премьера */
+  const upcomingItems = [...MOVIES, ...allEpisodes]
+    .filter(p => p.status === 'upcoming')
+    .sort((a,b) => new Date(a.premiereISO) - new Date(b.premiereISO));
+  const nextItem = upcomingItems[0];
+  const daysToNext = nextItem
+    ? Math.max(0, Math.ceil((new Date(nextItem.premiereISO) - Date.now()) / 86400000))
+    : null;
+
+  /* Активность вселенной (текущий год) */
+  const currentYear = new Date().getFullYear();
+  const yearsActive = currentYear - 2024;
+
+  /* % выпущенного контента */
+  const totalProjects    = MOVIES.length + totalEp;
+  const releasedProjects = releasedMv + releasedEp;
+  const releasedPercent  = totalProjects > 0
+    ? Math.round((releasedProjects / totalProjects) * 100)
+    : 0;
+
+  /* Главные цифры (4 шт.) */
+  const mainStats = [
+    { n: MOVIES.length,          label: "Фильмов" },
+    { n: SHOW_SERIES.length,     label: "Сериалов" },
+    { n: totalEp,                label: "Эпизодов" },
+    { n: uniqueActors,           label: "Актёров в кадре" },
+  ];
+
+  /* Доп. ряд (3 шт.) */
+  const stripStats = [
+    { l: "Год основания",        v: "2024",                                    red: false },
+    { l: "Выпущено / в работе",  v: `${releasedProjects} / ${upcomingEp + upcomingMv}`, red: false },
+    { l: "Готовность вселенной", v: `${releasedPercent}%`,                     red: false },
+  ];
+
+  const statsHTML = mainStats.map(s => `
+    <div class="about-stat rv">
+      <div class="about-stat-n">${s.n}</div>
+      <div class="about-stat-l">${s.label}</div>
+    </div>`).join('');
+
+  const stripHTML = stripStats.map(s => `
+    <div class="about-strip-cell rv">
+      <span class="about-strip-l">${s.l}</span>
+      <span class="about-strip-v${s.red ? ' red' : ''}">${s.v}</span>
+    </div>`).join('');
+
+  const teamHTML = ABOUT.team.map(t => `
+    <div class="team-card rv">
+      <span class="team-name">${t.name}</span>
+      <span class="team-role">${t.role}</span>
+    </div>`).join('');
+
+  body.innerHTML = `
+    <div class="about-wrap">
+
+      <!-- HERO -->
+      <div class="about-hero rv">
+        <div class="about-hero-l">
+          <span class="about-hero-tag">${ABOUT.tagline}</span>
+          <h2 class="about-hero-title">ALCALIX <em>STUDIOS</em></h2>
+        </div>
+        <div class="about-hero-r">
+          <span class="about-hero-since">с 2024 · ${yearsActive === 0 ? 'первый год' : yearsActive + ' С момента основания'}</span>
+          <span class="about-hero-id">ID-ALC-${String(totalProjects).padStart(3,'0')}</span>
+        </div>
+      </div>
+
+      <!-- 4 главных цифры -->
+      <div class="about-stats">${statsHTML}</div>
+
+      <!-- 3 доп. показателя -->
+      <div class="about-strip">${stripHTML}</div>
+
+      <!-- Краткое описание -->
+      <div class="about-brief rv">
+        <span class="about-brief-mark">Studio</span>
+        <div class="about-brief-text">${ABOUT.description}</div>
+      </div>
+
+      <!-- Команда -->
+      <div class="about-team-head rv">
+        <span class="about-team-title">Команда</span>
+        <span class="about-team-count">${ABOUT.team.length} в составе · ${uniqueDirectors} режиссёр${uniqueDirectors === 1 ? '' : (uniqueDirectors < 5 ? 'а' : 'ов')}</span>
+      </div>
+      <div class="about-team-grid">${teamHTML}</div>
+
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   DETAIL DRAWER
+   ══════════════════════════════════════════════════ */
 function openDetail(item, type) {
   const up = item.status === 'upcoming';
+  document.getElementById('detail-type').textContent = type==='film' ? '— Фильм' : '— Серия';
 
-  // header
-  document.getElementById('detail-type').textContent = type === 'film' ? '— Фильм' : '— Сериал';
-
-  // hero
   const hero = document.getElementById('d-hero');
-  hero.style.display = item.bg ? 'block' : 'none';
-  if (item.bg) hero.style.backgroundImage = `url('${item.bg}')`;
+  if (item.bg) { hero.style.display='block'; hero.style.backgroundImage=`url('${item.bg}')`; }
+  else { hero.style.display='none'; }
 
-  // badge row
-  const br = document.getElementById('d-badge-row');
-  br.innerHTML = `<div class="badge ${up?'upcoming':'released'}">${up?'<span class="bblink"></span>Ожидается':'Выпущен'}</div>`;
+  document.getElementById('d-badge-row').innerHTML = badgeHTML(item.status);
+  document.getElementById('d-title').textContent   = item.title;
 
-  // title & episode
-  document.getElementById('d-title').textContent = item.title;
   const epEl = document.getElementById('d-ep');
-  epEl.textContent = item.episode || '';
-  epEl.style.display = item.episode ? 'block' : 'none';
-
-  // countdown
-  const cdWrap = document.getElementById('d-countdown-wrap');
-  if (up) {
-    cdWrap.style.display = 'inline-flex';
-    detailActiveISO = item.premiereISO;
-    document.getElementById('d-countdown').textContent = getCountdown(item.premiereISO) || 'Скоро';
+  if (item.season !== undefined) {
+    epEl.textContent = `Season ${item.season} // Episode ${item.episode}`;
+    epEl.style.display = 'block';
   } else {
-    cdWrap.style.display = 'none';
-    detailActiveISO = null;
+    epEl.textContent = ''; epEl.style.display = 'none';
   }
 
-  // meta grid
-  const meta = document.getElementById('d-meta');
-  meta.innerHTML = `
+  const cdWrap = document.getElementById('d-countdown-wrap');
+  if (up) {
+    detailActiveISO = item.premiereISO;
+    document.getElementById('d-countdown').textContent = getCountdown(item.premiereISO) || 'Скоро';
+    cdWrap.classList.add('active');
+  } else {
+    detailActiveISO = null;
+    cdWrap.classList.remove('active');
+  }
+
+  document.getElementById('d-meta').innerHTML = `
     <div class="d-meta-cell"><div class="d-meta-label">Жанр</div><div class="d-meta-val">${item.genre||'—'}</div></div>
     <div class="d-meta-cell"><div class="d-meta-label">Длительность</div><div class="d-meta-val">${item.duration||'—'}</div></div>
     <div class="d-meta-cell"><div class="d-meta-label">Режиссёр</div><div class="d-meta-val">${item.director||'—'}</div></div>
     <div class="d-meta-cell"><div class="d-meta-label">Год</div><div class="d-meta-val">${item.year||'—'}</div></div>`;
 
-  // cast
-  const cast = document.getElementById('d-cast');
-  cast.innerHTML = '';
+  const castEl    = document.getElementById('d-cast');
+  const castLabel = document.getElementById('d-cast-label');
+  castEl.innerHTML = '';
   if (item.cast && item.cast.length) {
-    document.getElementById('d-cast-label').style.display = 'block';
+    castLabel.style.display = 'block';
     item.cast.forEach(c => {
       const row = document.createElement('div');
       row.className = 'cast-row';
       row.innerHTML = `<span class="cast-actor">${c.actor}</span><span class="cast-role">${c.role}</span>`;
-      cast.appendChild(row);
+      castEl.appendChild(row);
     });
-  } else {
-    document.getElementById('d-cast-label').style.display = 'none';
+  } else { castLabel.style.display = 'none'; }
+
+  const actionsEl = document.getElementById('d-actions');
+  actionsEl.innerHTML = '';
+
+  if (item.archived) {
+    const warn = document.createElement('div');
+    warn.className = 'd-archive-warn';
+    warn.textContent = '⚠ Архивы первого сезона утеряны — видео недоступны';
+    actionsEl.appendChild(warn);
   }
 
-  // action buttons
-  const actions = document.getElementById('d-actions');
-  actions.innerHTML = '';
-
-  function makeBtn(cfg, labelText, icon) {
+  function makeBtn(cfg, label, icon) {
     if (!cfg || !cfg.show) return;
-    const el = document.createElement(cfg.online ? 'a' : 'div');
-    if (cfg.online && cfg.link) { el.href = cfg.link; el.target = '_blank'; }
-    const offlineTag = !cfg.online ? '<span class="btn-offline-tag">Недоступно</span>' : '';
-    el.className = `d-btn ${cfg.online ? (labelText==='СМОТРЕТЬ'?'watch':'behind') : 'offline'}`;
-    el.innerHTML = `${icon} ${labelText} ${offlineTag}`;
-    actions.appendChild(el);
+    const isOnline = cfg.online && cfg.link;
+    const el = document.createElement(isOnline ? 'a' : 'div');
+    if (isOnline) { el.href = cfg.link; el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+    const cls = !cfg.online ? 'offline' : (label==='СМОТРЕТЬ' ? 'watch' : 'behind');
+    el.className = `d-btn ${cls}`;
+    el.innerHTML = `${icon} ${label}${!cfg.online?' <span class="btn-offline-tag">Недоступно</span>':''}`;
+    actionsEl.appendChild(el);
   }
+  makeBtn(item.btnWatch,  'СМОТРЕТЬ',       ICON_PLAY);
+  makeBtn(item.btnBehind, 'ФИЛЬМ О ФИЛЬМЕ', ICON_INFO);
 
-  makeBtn(item.btnWatch,
-    'СМОТРЕТЬ',
-    `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="3,1 13,7 3,13" fill="currentColor"/></svg>`
-  );
-  makeBtn(item.btnBehind,
-    'ФИЛЬМ О ФИЛЬМЕ',
-    `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/><line x1="7" y1="4" x2="7" y2="7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="7" cy="9.5" r="0.7" fill="currentColor"/></svg>`
-  );
-
-  // scroll to top
   document.getElementById('detail-body').scrollTop = 0;
-
-  // open
   document.getElementById('detail').classList.add('open');
 }
-
 function closeDetail() {
   document.getElementById('detail').classList.remove('open');
   detailActiveISO = null;
 }
 
 /* ══════════════════════════════════════════════════
-   LIST PANEL OPEN / CLOSE
-   ══════════════════════════════════════════════════ */
-function openList(type) {
-  document.getElementById('home').classList.add('hidden');
-  const panel = document.getElementById(`lp-${type}`);
-  panel.classList.add('open');
-  setTimeout(() => {
-    panel.querySelectorAll('.rv').forEach(el => {
-      const r = el.getBoundingClientRect();
-      if (r.top < window.innerHeight + 80) el.classList.add('vis');
-    });
-    panel.querySelector('.lbody').addEventListener('scroll', () => {
-      panel.querySelectorAll('.rv:not(.vis)').forEach(el => {
-        if (el.getBoundingClientRect().top < window.innerHeight + 60) el.classList.add('vis');
-      });
-    }, {passive:true});
-  }, 220);
-}
-
-function closeList(type) {
-  closeDetail();
-  document.getElementById('home').classList.remove('hidden');
-  const panel = document.getElementById(`lp-${type}`);
-  panel.classList.remove('open');
-  setTimeout(() => {
-    panel.querySelector('.lbody').scrollTop = 0;
-    panel.querySelectorAll('.rv').forEach(el => el.classList.remove('vis'));
-  }, 560);
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    if (document.getElementById('detail').classList.contains('open')) { closeDetail(); return; }
-    closeList('movies'); closeList('series');
-  }
-});
-
-/* ══════════════════════════════════════════════════
    COUNTDOWN TICK
    ══════════════════════════════════════════════════ */
 function tick() {
   document.querySelectorAll('[data-cd]').forEach(el => {
-    const r = getCountdown(el.getAttribute('data-cd'));
-    el.textContent = r ?? 'Вышел';
+    el.textContent = getCountdown(el.dataset.cd) ?? 'Вышел';
   });
   if (detailActiveISO) {
-    const r = getCountdown(detailActiveISO);
-    document.getElementById('d-countdown').textContent = r || 'Скоро';
+    document.getElementById('d-countdown').textContent =
+      getCountdown(detailActiveISO) || 'Скоро';
   }
 }
 
 /* ══════════════════════════════════════════════════
    CANVAS PARTICLES
    ══════════════════════════════════════════════════ */
-const cvs = document.getElementById('cvs');
-const ctx = cvs.getContext('2d');
-let pts = [];
-function rcvs() { cvs.width = innerWidth; cvs.height = innerHeight; }
-class P {
-  constructor() { this.reset(); this.y = Math.random()*cvs.height; }
-  reset() {
-    this.x = Math.random()*cvs.width; this.y = cvs.height+4;
-    this.r = Math.random()*0.85+0.18; this.vy = Math.random()*0.25+0.06;
-    this.a = Math.random()*0.22+0.04;
+(function(){
+  const cvs = document.getElementById('cvs');
+  const ctx = cvs.getContext('2d');
+  const pts = [];
+  function resize(){ cvs.width=innerWidth; cvs.height=innerHeight; }
+  class P {
+    constructor(ry){ this._r(); if(ry) this.y=Math.random()*cvs.height; }
+    _r(){
+      this.x=Math.random()*cvs.width; this.y=cvs.height+4;
+      this.r=Math.random()*0.9+0.15; this.vy=Math.random()*0.28+0.05;
+      this.red=Math.random()<0.04;
+      this.a=this.red?Math.random()*0.18+0.06:Math.random()*0.2+0.04;
+    }
+    step(){ this.y-=this.vy; if(this.y<-4)this._r(); }
+    draw(){
+      ctx.fillStyle=this.red?`rgba(230,36,41,${this.a})`:`rgba(255,255,255,${this.a})`;
+      ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+    }
   }
-  tick() { this.y -= this.vy; if(this.y<-4) this.reset(); }
-  draw() { ctx.fillStyle=`rgba(255,255,255,${this.a})`; ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill(); }
-}
-function anim() { ctx.clearRect(0,0,cvs.width,cvs.height); pts.forEach(p=>{p.tick();p.draw();}); requestAnimationFrame(anim); }
+  function frame(){ ctx.clearRect(0,0,cvs.width,cvs.height); pts.forEach(p=>{p.step();p.draw();}); requestAnimationFrame(frame); }
+  resize(); window.addEventListener('resize',resize,{passive:true});
+  for(let i=0;i<90;i++) pts.push(new P(true));
+  frame();
+})();
 
 /* ══════════════════════════════════════════════════
    CLOCK
    ══════════════════════════════════════════════════ */
-function clk() {
+function updateClock(){
   document.getElementById('nclock').textContent =
     new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
 /* ══════════════════════════════════════════════════
+   EVENT DELEGATION
+   ══════════════════════════════════════════════════ */
+document.addEventListener('click', e => {
+  const panelTrigger = e.target.closest('[data-panel]');
+  if (panelTrigger) { openPanel(panelTrigger.dataset.panel); return; }
+  const closeTrigger = e.target.closest('[data-close]');
+  if (closeTrigger) { closePanel(closeTrigger.dataset.close); return; }
+});
+document.getElementById('nav-logo').addEventListener('click', goHome);
+document.getElementById('detail-bd').addEventListener('click', closeDetail);
+document.getElementById('detail-close').addEventListener('click', closeDetail);
+document.getElementById('ep-panel-back').addEventListener('click', closeEpisodesPanel);
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('detail').classList.contains('open')) { closeDetail(); return; }
+  if (document.getElementById('lp-episodes').classList.contains('open')) { closeEpisodesPanel(); return; }
+  if (activePanel) closePanel(activePanel);
+});
+
+/* ══════════════════════════════════════════════════
    INIT
    ══════════════════════════════════════════════════ */
 window.addEventListener('load', () => {
-  renderMovies(); renderSeries(); tick();
-  rcvs(); window.addEventListener('resize', rcvs);
-  for(let i=0;i<80;i++) pts.push(new P()); anim();
-  clk(); setInterval(clk,1000); setInterval(tick,1000);
+  renderMovies();
+  renderSeries();
+  renderAbout();
+  tick();
+  updateClock();
+  setInterval(tick, 1000);
+  setInterval(updateClock, 1000);
 
   setTimeout(() => {
-    document.getElementById('intro').classList.add('out');
-    setTimeout(() => { document.getElementById('intro').style.display='none'; }, 860);
-  }, 2000);
+    const intro = document.getElementById('intro');
+    intro.classList.add('out');
+    intro.addEventListener('transitionend', () => intro.remove(), { once: true });
+  }, 1600);
 });
 </script>
-<script>document.documentElement.style.zoom="1.1";</script>
 </body>
 </html>
