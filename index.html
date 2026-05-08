@@ -100,12 +100,6 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
   display:block;transform:translateY(110%);
   animation:i-up 0.35s 1.28s cubic-bezier(0.16,1,0.3,1) forwards;
 }
-/* Красная черта — появляется одновременно с блоком 1, остаётся */
-.i-bar{
-  width:0;height:1px;background:var(--red);
-  margin:14px 0 10px;
-  animation:i-bar-grow 0.42s 0.62s var(--ease) forwards;
-}
 @keyframes i-bar-grow{to{width:clamp(80px,20vw,260px)}}
 
 .i-bottom{
